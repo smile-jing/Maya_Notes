@@ -855,7 +855,110 @@ promptDialog;
 $ans = `promptDialog -query -text`;
 ```
 ## 脚本作业
-## 用户界面管理
+### 什么是ScriptJob
+使用ScriptJob，可以定义在MAYA中事件或状态更改时要执行的命令。
 
+### 例子
+- 返回事件列表。 `scriptJob -listEvents;`
+- 返回状态列表。 `scriptJob -listConditions;`
+- 删除所选对象。 
+scriptJob返回作业号。 `$jobnum = scriptJob conditionTrue "SomethingSelected" "delete"`;`
+- 杀死不再需要的工作。 scriptJob -kill $jobnum;
+
+## 用户界面管理
+### 窗口管理
+使用以下命令显示/删除窗口列表。
+- `lsUI`
+显示UI对象
+- `deleteUI`
+删除UI对象
+### 搜索/更改小部件
+使用以下标志显示小部件参数的值并在以后更改它们。
+- 获取参数标记 `-query`
+- 更改参数标记 `-edit`
+### 示例
+- 清单视窗 `lsUI -windows;`
+- 删除视窗 `deleteUI window1;`
+- 显示按钮标签 `button -query -label button1;`
+- 创建窗口后调整大小
+```Mel
+window window1;
+	columnLayout;
+showWindow;
+window -edit -width 400 -height 300 window1;
+button -parent window1 -label "button1" button1;
+```
 # 渲染
+## 渲染执行
+要渲染和创建图像文件，请创建相机并使用相机执行渲染。
+
+1. 造型
+2. 灯光设置
+3. 创建相机（camera）
+4. 设置渲染参数（renderGlobals，renderQualityNode） 
+    图像文件质量，文件格式等。
+5. 渲染执行（render）
+## 示例
+```Mel
+sphere;
+pointLight;
+move 10 10 10;
+camera -position 0 0 5 -worldCenterOfInterest 0 0 0;
+setAttr defaultRenderGlobals.imageFormat 5;     // 5 is SGI image format
+render camera1;
+```
+![](http://m.qpic.cn/psc?/V13NyWDQ1wuYDY/NZ9C4PTRAOGVNvAxFZDwt06Y44w1VjAY9wwWU.yeEmgp.daOviPGsf3LxEl6kYAsxezEsz*WjX0Dzkok2ZG5wg!!/b&bo=PAHvAAAAAAADB*A!&rf=viewer_4)
 # 属性
+
+## 节点类型
+- 形状节点
+定义形状
+- 转换节点
+定义运动，动画等
+## 属性类型
+每个节点都有属性。 
+通过更改此属性执行动画。
+
+- 静态的
+节点独有的内容，无法删除
+- 动态
+可以添加/删除的内容
+- 自订
+用户定义和添加/删除
+如何访问属性
+## 如何访问属性
+有以下几种通过GUI访问属性的方法。
+
+- ChannelBox显示 
+关键帧属性
+- AttributeEditor
+编辑器显示所有属性
+
+使用以下命令显示/获取/设置/连接/定义节点的属性。
+- listAttr 
+显示属性
+- getAttr 
+获取属性
+- setAttr 
+设置属性
+- connectAttr 
+连接属性
+- disconnectAttr 
+断开属性连接
+- aliasAttr 
+定义属性别名
+- addAttr 
+添加属性
+- deleteAttr 
+删除属性
+## 示例
+- 显示关键帧属性 `listAttr -k nurbsSphere1;`
+- 获取属性 `getAttr nurbsSphere1.ty;`
+- 设定属性 `setAttr nurbsSphere1.ty 2.0;`
+- 将nurbsSphere1的sy连接到nurbsSphere2的sy `connectAttr nurbsSphere1.sy nurbsSphere2.sy;`
+- 强制将nurbsSphere1的sy连接到nurbsSphere2的sy（原来连接到nurbsSphere2的sy的属性将断开连接） `connectAttr -f nurbsSphere1.sy nurbsSphere2.sy;`
+- 断开nurbsSphere1的sy和nurbsSphere2的sy的连接 `disconnectAttr nurbsSphere1.sy nurbsSphere2.sy;`
+- 名称为up的nurbsSphere1 ty的别名定义 `aliasAttr up nurbsSphere1.ty;`
+- 取消nurbsSphere1的别名定义 `aliasAttr -remove nurbsSphere1.ty; `
+    `aliasAttr -remove nurbsSphere1.up;`
+- 向nurbsSphere1添加了属性 `addAttr -longName "otherAngle" -shortName "oa" -min 0.001 -max 90 nurbsSphere1;`
